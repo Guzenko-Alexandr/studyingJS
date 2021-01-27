@@ -12,6 +12,7 @@
 .tabs {
     padding: 20px;
     display: flex;
+    margin-bottom: 10vh;
 }
 
 .tabs__list > li {
