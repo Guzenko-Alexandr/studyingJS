@@ -1,100 +1,88 @@
 "use strict"
 
-
-let myArray = [];
-
 let url = "https://swapi.dev/api/people/";
 
-let secondArray = [];
+let personsArray = [];
 
-async function creatValueArray() {
-
-
+async function getAndCreateAllPerson() {
     while (url !== null) {
-        let lastjson;
+        let dataPersons;
         await fetch(url)
             .then(res => res.json())
-            .then(resjson => lastjson = resjson)
+            .then(resJson => dataPersons = resJson)
             .catch(err => console.log(err));
-        myArray.push(lastjson);
-        url = lastjson["next"];
-        // console.log(lastjson["results"]);
+        url = dataPersons["next"];
+        personsArray = personsArray.concat(dataPersons["results"]);
     }
+    CreateAllPersonsInDoc();
+}
 
-    for (let i = 0; i < myArray.length; i++) {
+function CreateAllPersonsInDoc() {
+    addInInterface();
+};
 
-        for (let j = 0; j < myArray[i].results.length; j++) {
-            secondArray.push(myArray[i].results[j]);
-        }
-    }
-
-    secondArray.forEach(function (i, item, secondArray) {
-        // alert(i.name);
-        addElement(i);
+function addInInterface() {
+    let idNumber = 1;
+    personsArray.forEach((personObj) => {
+        addElementNamePerson(personObj, idNumber);
+        createCard(personObj, idNumber);
+        idNumber++;
     });
+};
 
-    // function addElement(person) {
-    //     let div = document.createElement('div');
-    //     div.className = 'personStyleNew';
-    //     div.style.backgroundColor = person.color;
-    //     div.style.display = 'flex';
-    //     div.style.justifyContent = 'space-between';
-    //     div.innerHTML = ` ${person.id} 
-    //                     <br> ${person.first_name} 
-    //                     <br> ${person.last_name} 
-    //                     <br> ${person.email} 
-    //                     <br> ${person.gender} 
-    //                     <br> ${person.ip_address} 
-    //                     <br> ${person.color}
-    //                     <br> ${person.slogan}`;
-    //     div.prepend(createImg(person.avatar));
-    //     document.body.appendChild(div);
-    // }
-
-
-    function addElement(i) {
-        let myFirstUl = document.querySelector("ul");
-        let li = document.createElement('li');
-        li.innerHTML = i.name;
-        li.className = 'classLi';
-        li.id = "elem";
-        li.style.background = "#2f4f4f";
-        li.style.listStyle = "none";
-        // li.style.width = "20%";
-        myFirstUl.appendChild(li);
-        li.onclick = function () {
-            // for (let key in i) 
-            // alert(i[key]);
-
-            var previousElement = document.querySelector('.dataField');
-            if (previousElement !== null) {
-                console.log(previousElement);
-                previousElement.parentNode.removeChild(previousElement);
-            }
-
-            let secondDiV = document.getElementById("secondDiv");
-            let div = document.createElement('div');
-            div.innerHTML = i.name;
-            div.innerHTML += `<br> ${i.height}`;
-            div.innerHTML += `<br> ${i.mass}`;
-            div.className = "dataField";
-            div.style.background = "#ff7f50";
-            // div.style.width = "100%";
-            secondDiV.appendChild(div);
-
-
-
-
-        };
-
-    }
-
-
+function triggerClick(e, item) {
+    e.preventDefault();
+    document.querySelectorAll(".triggers__tabs").forEach(
+        (child) => child.classList.remove("triggers__tabs--active")
+    );
+    document.querySelectorAll(".tabs__content__item").forEach(
+        (child) => child.classList.remove("tabs__content__item--active")
+    );
+    item.classList.add('triggers__tabs--active');
+    document.getElementById(item.dataset.id).classList.add("tabs__content__item--active");
+    // let ddd = ;
+    document.getElementById(item.dataset.id).style.margin = `${31 * item.dataset.id - 31}px 0 0 0 `
 };
 
 
-creatValueArray();
+function addElementNamePerson(person, counter) {
+    let myFirstUl = document.querySelector("ul");
+    let li = document.createElement('li');
+    li.innerHTML = person.name;
+    li.dataset.id = `${counter}`;
+    li.className = "triggers__tabs";
+    li.style.listStyle = "none";
+    li.onclick = (e) => { triggerClick(e, li); };
+    myFirstUl.appendChild(li);
+};
 
+function createCard(person, counter) {
+    let tabsContent = document.querySelector(".tabs__content");
+    let Card = document.createElement('div');
+    let imgPerson = document.createElement('img');
+    imgPerson.src = "https://condenast-media.gcdn.co/tatler/45146299af71ff4fb201dee6674d1339.png/147f43f2/o/w2660";
+    let characteristic = document.createElement('p');
+    // characteristic.innerHTML += `${person.name} <br> ${person.height} <br> ${person.mass}`;
+    Card.className = "tabs__content__item";
+    Card.id = counter;
+    Card.appendChild(imgPerson);
+    tabsContent.appendChild(Card);
+    Card.appendChild(characteristic);
+    let textPerson = document.createElement('div');
+    textPerson.className = "tabs__text"
+    createCharacteristicInCard(person.name, textPerson);
+    createCharacteristicInCard(person.gender, textPerson);
+    createCharacteristicInCard(person.height, textPerson);
+    createCharacteristicInCard(person.mass, textPerson);
+    Card.appendChild(textPerson);
+};
 
+function createCharacteristicInCard(parameter, textPerson) {
+    let newParametrPerson = document.createElement('p');
+    newParametrPerson.innerHTML = parameter;
+    textPerson.appendChild(newParametrPerson);
+}
+
+getAndCreateAllPerson();
 
 
