@@ -191,3 +191,5 @@ function createCharacteristicInCard(nameParametr, parameter, textPerson) {
     newParametrPerson.innerHTML = `${nameParametr} ${parameter} `;
     textPerson.appendChild(newParametrPerson);
 }
+
+//
