@@ -17,6 +17,10 @@ let maximumNumberOfPages = 0;
 let functionExecuted = false;
 let counterList = 0;
 let newMaximumNumberOfPages = 0;
+let toCreatePagination = 0;
+let createMaxNumberofPages = 0;
+
+let pagginationArray = [];
 
 let previousClick;
 async function getAndCreateAllPerson(ValidationValue, secondValue) {
@@ -24,6 +28,7 @@ async function getAndCreateAllPerson(ValidationValue, secondValue) {
     functionExecuted = true;
     if (ValidationValue == 1) {
         counterList += 1;
+        changeMeaningPagination(true);
     }
     if (previousClick == undefined) {
         previousClick = "http://swapi.dev/api/people/?page=9";
@@ -32,9 +37,13 @@ async function getAndCreateAllPerson(ValidationValue, secondValue) {
     if (ValidationValue == 0) {
         url = previousClick;
         counterList -= 1;
+        changeMeaningPagination(false);
     }
     if (secondValue !== undefined) {
         url = secondValue;
+        if (typeof secondValue !== null) {
+            url = `http://swapi.dev/api/people/?page=${secondValue}`;
+        }
     }
     console.log(url);
     personsArray = [];
@@ -43,8 +52,24 @@ async function getAndCreateAllPerson(ValidationValue, secondValue) {
         .then(res => res.json())
         .then(resJson => dataPersons = resJson)
         .catch(err => console.log(err));
+    for (; 1 > createMaxNumberofPages;) {
+        maximumNumberOfPages = Math.ceil(dataPersons["count"] / 10);
+        ++createMaxNumberofPages;
+    };
     url = dataPersons["next"];
     previousClick = dataPersons["previous"];
+
+    // if (dataPersons["previous"] == null) {
+
+    // }
+    if (dataPersons["previous"] == null) {
+        pagginationArray[0] = 'http://swapi.dev/api/people/?page=9';
+    }
+
+    for (; toCreatePagination == 0; toCreatePagination++) {
+        createPagination(maximumNumberOfPages);
+    };
+
     if (dataPersons["next"] == null) {
         url = "https://swapi.dev/api/people/";
         counterList = maximumNumberOfPages;
@@ -54,28 +79,56 @@ async function getAndCreateAllPerson(ValidationValue, secondValue) {
     }
     personsArray = personsArray.concat(dataPersons["results"]);
     CreateAllPersonsInDoc();
-    maximumNumberOfPages = Math.ceil(dataPersons["count"] / 10);
     pagination();
+    // changeMeaningPagination();
     let preloaderTabs = document.querySelector('.tabs__preloader');
     preloaderTabs.classList.add("tabs__preloader--invisible");
     functionExecuted = false;
 }
 
-function pagination() {
-    let allPreviousPaginationCounter = document.querySelectorAll(".pagination__counter");
-    allPreviousPaginationCounter.forEach((child) => {
-        child.remove();
-    })
-    for (let i = 1; i < maximumNumberOfPages + 1; i++) {
+
+
+function createPagination() {
+    for (let i = 1; i < 5 + 1; i++) {
+        // console.log(pagginationArray[i])
         let paginationLastLi = document.querySelector('.pagination__last-li');
         let li = document.createElement('li');
         let a = document.createElement('a');
         li.appendChild(a);
-        a.href = `http://swapi.dev/api/people/?page=${i}`;
+        a.id = i;
         a.className = `pagination__counter`;
         a.innerHTML = `${i}`;
+        if (i == 1) {
+            a.dataset.id = 1;
+        }
+        if (i == 2) {
+            a.innerHTML = 2;
+        }
+        if (i == 3) {
+            a.innerHTML = 3;
+            a.dataset.id = 3;
+        }
+        if (i == 4) {
+            a.innerHTML = '...';
+            // a.className = "";
+            a.classList += "pointer-events-active";
+        }
+        if (i == 5) {
+            a.innerHTML = maximumNumberOfPages;
+            a.id = maximumNumberOfPages;
+            // a.classList.add("maximumNumberOfPages");
+            a.dataset.id = "maximumNumberOfPages";
+        }
         paginationLastLi.before(li);
     }
+}
+
+function pagination() {
+    // let allPreviousPaginationCounter = document.querySelectorAll(".pagination__counter");
+    // allPreviousPaginationCounter.forEach((child) => {
+    // child.remove();
+    // })
+
     let allCurrentPaginationCounter = document.querySelectorAll(".pagination__counter")
     allCurrentPaginationCounter.forEach((elem) => elem.onclick = (e) => {
         e.preventDefault();
@@ -85,8 +138,41 @@ function pagination() {
             return;
         }
         deletePreviousPerson();
-        getAndCreateAllPerson(-1, elem.href);
+        getAndCreateAllPerson(-1, elem.id);
     });
+}
+
+function changeMeaningPagination(checkValue) {
+    let allMeaningPagination = document.querySelectorAll('.pagination__counter');
+    if (checkValue == true) {
+        allMeaningPagination.forEach((child) => {
+            if (child.dataset.id == "maximumNumberOfPages") {
+                return;
+            }
+            else {
+                child.id = +child.id + 1;
+                child.innerHTML = +child.innerHTML + 1;
+            }
+        })
+    }
+    else if (checkValue == false) {
+        allMeaningPagination.forEach((child) => {
+            if (child.dataset.id == "maximumNumberOfPages") {
+                return;
+            }
+            child.id = +child.id - 1;
+            child.innerHTML = +child.innerHTML - 1;
+        })
+    }
+    else {
+
+
+    }
+    // var desiredValues = allMeaningPagination.filter(function (key) {
+    //     return key < 9;
+    // });
+    // console.log(desiredValues)
+
 }
 
 
@@ -191,5 +277,3 @@ function createCharacteristicInCard(nameParametr, parameter, textPerson) {
     newParametrPerson.innerHTML = `${nameParametr} ${parameter} `;
     textPerson.appendChild(newParametrPerson);
 }
-
-//

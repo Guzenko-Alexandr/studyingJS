@@ -539,6 +539,11 @@ button:focus {
 .pagination__last-item:active,
 .pagination__last-item:hover {
     box-shadow: 0 0 20px #3527ff !important;
-    color: #3527ff !important;
+    color: #fff !important;
     border: #3527ff solid 1px !important;
+    background-color: #3527ff !important;
+}
+
+.pointer-events-active {
+    pointer-events: none;
 }
