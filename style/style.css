@@ -547,3 +547,8 @@ button:focus {
 .pointer-events-active {
     pointer-events: none;
 }
+
+.pagination__element-active {
+    /* color: aqua !important; */
+    background-color: #ff4242 !important;
+}
